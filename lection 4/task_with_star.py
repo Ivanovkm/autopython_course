@@ -13,20 +13,36 @@
 
 def max_division_by_3(num):
     new_num = 0
-    nums_lst = []  # список для чисел, аналогичных по кол-ву знаков исходному и отличающихся на 1 цифру
     lst = [int(x) for x in str(num)]  # переводим число num в список из его цифр
     # Начинаем перебор цифр числа num:
-    for index in range(len(lst)):
-        digit = lst[index]  # Запоминаем исходное значение текущей цифры
-        # Увеличиваем цифру в цикле:
-        while lst[index] < 9:
-            lst[index] += 1
-            nums_lst.append(int(''.join(str(y) for y in lst)))  # Заносим в список получившиеся новые числа
-        lst[index] = digit  # Возвращаем текущей цифре исходное значение и переходим к следующей
-    # Перебираем полученный список и проверяем условия делимости на 3 и выбираем самое большое число:
-    for n in nums_lst:
-        if n % 3 == 0 and n > new_num:
-            new_num = n
+    for x in range(len(lst)):
+        actual_digit = lst[x]
+        for d in reversed(range(lst[x] + 1, 10)):
+            lst[x] = d
+            new_num = int(''.join(str(y) for y in lst))
+            if new_num % 3 == 0:
+                break
+            else:
+                new_num = 0
+        if new_num != 0:
+            break
+        else:
+            lst[x] = actual_digit
+
+    if new_num == 0:
+        for x in reversed(range(len(lst))):
+            actual_digit = lst[x]
+            for d in reversed(range(1, lst[x])):
+                lst[x] = d
+                new_num = int(''.join(str(y) for y in lst))
+                if new_num % 3 == 0:
+                    break
+                else:
+                    new_num = 0
+            if new_num != 0:
+                break
+            else:
+                lst[x] = actual_digit
     return new_num
 
 # Ниже НИЧЕГО НЕ НАДО ИЗМЕНЯТЬ
