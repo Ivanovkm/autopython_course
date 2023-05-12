@@ -8,8 +8,7 @@
 def flatten_and_sort(array):
     # Здесь нужно написать код
     result_list = []
-    for x in array:
-        result_list += [y for y in x]
+    [result_list.extend(x) for x in array]
     result_list.sort()
     return result_list
 
