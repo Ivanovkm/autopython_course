@@ -12,37 +12,23 @@
 # 4974 --> 7974
 
 def max_division_by_3(num):
-    new_num = 0
-    lst = [int(x) for x in str(num)]  # переводим число num в список из его цифр
+    # переводим число num в список из его цифр:
+    lst = [int(x) for x in str(num)]
     # Начинаем перебор цифр числа num:
-    for x in range(len(lst)):
-        actual_digit = lst[x]
-        for d in reversed(range(lst[x] + 1, 10)):
-            lst[x] = d
-            new_num = int(''.join(str(y) for y in lst))
-            if new_num % 3 == 0:
-                break
-            else:
-                new_num = 0
-        if new_num != 0:
+    for index in range(len(lst)):
+        # Запоминаем значение текущей цифры:
+        digit = lst[index]
+        # Прибавляем разницу между остатком и делителем, чтобы найти нужное число, пока не перевалим за 9:
+        while (3 - sum(lst) % 3) + lst[index] <= 9:
+            lst[index] += 3 - sum(lst) % 3
+        # Если цифра изменилась, то заканчиваем, если нет - переходим к следующему разряду:
+        if lst[index] > digit:
             break
-        else:
-            lst[x] = actual_digit
-
-    if new_num == 0:
-        for x in reversed(range(len(lst))):
-            actual_digit = lst[x]
-            for d in reversed(range(1, lst[x])):
-                lst[x] = d
-                new_num = int(''.join(str(y) for y in lst))
-                if new_num % 3 == 0:
-                    break
-                else:
-                    new_num = 0
-            if new_num != 0:
-                break
-            else:
-                lst[x] = actual_digit
+    # Получаем new_num
+    new_num = int(''.join(str(y) for y in lst))
+    # Если число не изменилось после всех итераций (все девятки), уменьшаем его на 3:
+    if new_num == num:
+        new_num -= 3
     return new_num
 
 # Ниже НИЧЕГО НЕ НАДО ИЗМЕНЯТЬ
