@@ -7,6 +7,6 @@ import pytest
 
 
 @pytest.mark.id_check(1, 2, 3)
-def test(request):
-    print(*request.keywords._markers['id_check'].args)
+def test():
+    print(test.pytestmark[0].args)
     pass
