@@ -7,7 +7,6 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver import ActionChains
 import time
 import datetime
 
@@ -24,6 +23,7 @@ def menu_item_finder(elements_list, text):
             return elements_list[i]
         else:
             assert False, 'Не нашли элемент меню с нужным текстом'
+
 
 site = 'https://fix-online.sbis.ru/'
 driver = webdriver.Chrome()
@@ -66,14 +66,15 @@ add_btn.click()
 time.sleep(2)
 
 find_input = driver.find_element(By.CSS_SELECTOR,
-                         '[data-qa="addressee-selector-root"] [data-qa="controls-Render__field"]')
+                                 '[data-qa="addressee-selector-root"] [data-qa="controls-Render__field"]')
 assert find_input.is_displayed(), 'Не отображается строка поиска'
 find_input.click()
 find_input.send_keys(sender_name)
 time.sleep(1)
 
 person = driver.find_element(By.CSS_SELECTOR,
-                     '[data-qa="addressee-selector-root"] [class="msg-person-selector__item"] span[title="Иванов Кирилл"]')
+                             '[data-qa="addressee-selector-root"] [class="msg-person-selector__item"] '
+                             'span[title="Иванов Кирилл"]')
 assert person.text == sender_name, f'Не нашли сотрудника {sender_name}'
 assert person.is_displayed()
 person.click()
@@ -92,16 +93,19 @@ send_date = datetime.datetime.now()
 
 time.sleep(1)
 message_title = driver.find_element(By.CSS_SELECTOR,
-                            f'div[name="readDateTarget"] [data-qa="item"] [title="{sender_name}"]')
+                                    f'div[name="readDateTarget"] [data-qa="item"] [title="{sender_name}"]')
 assert message_title.text == sender_name, 'Не нашли сообщение от нужного отправителя'
 msg_text = driver.find_element(By.CSS_SELECTOR, 'div[name="readDateTarget"] [data-qa="item"] p')
 assert msg_text.text == message_text, 'Текст сообщения неправильный'
 
 msg_date = driver.find_element(By.CSS_SELECTOR,
-                       'div[name="readDateTarget"] [data-qa="item"] [data-qa="msg-entity-date"]')
+                               'div[name="readDateTarget"] [data-qa="item"] [data-qa="msg-entity-date"]')
 # Я проверяю тут время, но я не знаю как надежно синхронизировать
 # время на тачке автотестирования с сервером сообщений
 # У меня из-за разницы с локальной машиной тест падает
 send_date_str += msg_date.text[0:2] + ' ' + msg_date.text[7:12]
 assert send_date_str == send_date.strftime(
-'%d %H:%M'), f'Ошибка при сравнении времении сообщения, ожидали {send_date_str}, получили {send_date.strftime("%d %H:%M")}'
+    '%d %H:%M'), f'Ошибка при сравнении времении сообщения, ожидали {send_date_str}, ' \
+                 f'получили {send_date.strftime("%d %H:%M")}'
+
+driver.quit()
