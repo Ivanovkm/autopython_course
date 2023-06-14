@@ -7,26 +7,19 @@
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver import ActionChains
 import time
 import datetime
 
-message_text = 'Привет'
+message_text = 'Это супер-уникальный никогда не повторимый единственный в своем роде текст'
 sender_name = 'Иванов Кирилл'
 send_date = None
 send_date_str = ''
-
-
-# Не придумал другого способа как искать в аккордеоне нужный пункт
-def menu_item_finder(elements_list, text):
-    for i in range(len(elements_list)):
-        if elements_list[i].text == text:
-            return elements_list[i]
-        else:
-            assert False, 'Не нашли элемент меню с нужным текстом'
-
-
 site = 'https://fix-online.sbis.ru/'
 driver = webdriver.Chrome()
+action_chains = ActionChains(driver)
+
+
 driver.get(site)
 time.sleep(1)
 assert driver.current_url == 'https://fix-sso.sbis.ru/auth-online/?ret=fix-online.sbis.ru/', 'Неправильный адрес сайта'
@@ -49,10 +42,9 @@ assert auth_btn.is_displayed(), 'Не отображается кнопка ау
 auth_btn.click()
 time.sleep(2)
 
-accordion = driver.find_elements(By.CSS_SELECTOR, '[data-qa=NavigationPanels-Accordion__title]')
-menu_item = menu_item_finder(accordion, 'Контакты')
-assert menu_item.is_displayed(), 'Пункт аккордеона "Контакты" не отображается'
-menu_item.click()
+accordion = driver.find_element(By.XPATH, '//span[text()="Контакты"]')
+assert accordion.is_displayed(), 'Пункт аккордеона "Контакты" не отображается'
+accordion.click()
 time.sleep(1)
 
 menu_item = driver.find_element(By.CLASS_NAME, 'NavigationPanels-SubMenu__headTitle')
@@ -100,12 +92,20 @@ assert msg_text.text == message_text, 'Текст сообщения непра�
 
 msg_date = driver.find_element(By.CSS_SELECTOR,
                                'div[name="readDateTarget"] [data-qa="item"] [data-qa="msg-entity-date"]')
-# Я проверяю тут время, но я не знаю как надежно синхронизировать
-# время на тачке автотестирования с сервером сообщений
-# У меня из-за разницы с локальной машиной тест падает
-send_date_str += msg_date.text[0:2] + ' ' + msg_date.text[7:12]
-assert send_date_str == send_date.strftime(
-    '%d %H:%M'), f'Ошибка при сравнении времении сообщения, ожидали {send_date_str}, ' \
-                 f'получили {send_date.strftime("%d %H:%M")}'
 
+msg = driver.find_element(By.CSS_SELECTOR, 'div[name="readDateTarget"] [data-qa="item"]')
+action_chains.move_to_element(msg)
+action_chains.context_click(msg)
+action_chains.perform()
+delete_btn = driver.find_element(By.CSS_SELECTOR, '[class="controls-Menu__content_baseline"] '
+                                                  '[title="Перенести в удаленные"]')
+assert delete_btn.is_displayed(), 'Не отображается кнопка котекстного меню "Удалить"'
+delete_btn.click()
+msg_date = driver.find_element(By.CSS_SELECTOR,
+                               'div[name="readDateTarget"] [data-qa="item"] [data-qa="msg-entity-date"]')
+send_date_str += msg_date.text[0:2] + ' ' + msg_date.text[7:12]
+
+
+msg_text = driver.find_element(By.CSS_SELECTOR, 'div[name="readDateTarget"] [data-qa="item"] p')
+assert msg_text.text != message_text, 'сообщение не удалилось'
 driver.quit()

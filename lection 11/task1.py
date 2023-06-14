@@ -17,12 +17,12 @@ driver.get('https://sbis.ru')
 time.sleep(1)
 assert driver.current_url == 'https://sbis.ru/', 'Неправильный адрес страницы sbis.ru'
 
-contacts_btn = driver.find_element(By.CSS_SELECTOR, '.sbisru-Header__menu-link[href="/contacts"]')
+contacts_btn = driver.find_element(By.CSS_SELECTOR, '[href="/contacts"]')
 assert contacts_btn.is_displayed(), 'Кнопка "Контакты" не отображается'
 contacts_btn.click()
 time.sleep(1)
-
-assert driver.current_url.__contains__('https://sbis.ru/contacts'), 'Не открылся раздел "Контакты"'
+url = driver.current_url[0:24]
+assert url == 'https://sbis.ru/contacts', 'Не открылся раздел "Контакты"'
 time.sleep(1)
 tensor_logo = driver.find_element(By.CSS_SELECTOR, '.sbisru-Contacts__logo-tensor')
 tensor_logo.is_displayed(), 'Не отображается лого тензора'
@@ -30,7 +30,6 @@ tensor_logo.click()
 time.sleep(1)
 
 handles = driver.window_handles
-print(handles)
 driver.switch_to.window(handles[1])
 
 
@@ -38,7 +37,7 @@ assert driver.current_url == 'https://tensor.ru/', "Не открылась ст
 people_block = driver.find_element(By.CSS_SELECTOR, '.tensor_ru-Index__block4-content.tensor_ru-Index__card')
 assert people_block.is_displayed(), "Не отображается блок 'Сила в людях'"
 about_people = driver.find_element(By.CSS_SELECTOR,
-                                   '.tensor_ru-Index__block4-content.tensor_ru-Index__card [href="/about"]')
+                                   'div>p>[href="/about"]')
 about_people.location_once_scrolled_into_view
 assert about_people.is_displayed(), 'Не отображается кнопка "Подробнее"'
 about_people.click()
